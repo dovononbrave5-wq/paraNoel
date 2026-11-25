@@ -11,6 +11,7 @@ const Paiements = require('../models/paiements.model');
 const Contenus = require('../models/contenus.model');
 const Journal = require('../models/journal.model');
 const upload = require('../middlewares/upload');
+const Stockage = require('../services/stockage');
 const { requireRole } = require('../middlewares/roles');
 const { nommerAdminRules, evenementRules, handleValidation } = require('../middlewares/validate');
 const { journaliser } = require('../utils/journal');
@@ -506,11 +507,8 @@ router.get('/jeux/:id/formulaire', async (req, res, next) => {
   try {
     const jeu = await jeuDe(req, res);
     if (!jeu) return;
-    const chemin = upload.cheminFormulaire(jeu.formulaire_pdf);
-    if (!chemin) return res.status(404).json({ error: 'Ce jeu n\'a pas de formulaire PDF' });
-    res.set('Content-Type', 'application/pdf');
-    res.set('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(jeu.formulaire_nom || 'formulaire.pdf')}`);
-    res.sendFile(chemin, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Fichier PDF introuvable' }); });
+    if (!jeu.formulaire_pdf) return res.status(404).json({ error: 'Ce jeu n\'a pas de questionnaire PDF' });
+    await Stockage.envoyer(res, 'formulaires', jeu.formulaire_pdf);
   } catch (err) {
     next(err);
   }
@@ -582,10 +580,9 @@ router.get('/participations/:id/photos/:n', async (req, res, next) => {
     const id = entierPositif(req.params.id);
     const n = entierPositif(req.params.n);
     const participation = id && await Jeux.trouverParticipationParId(id);
-    const chemin = participation && n && upload.cheminPhotoReponse(participation.photos[n - 1]);
-    if (!chemin) return introuvable(res, 'Photo');
-    res.set('Cache-Control', 'private, no-store');
-    res.sendFile(chemin, (err) => { if (err && !res.headersSent) introuvable(res, 'Photo'); });
+    const fichier = participation && n && participation.photos[n - 1];
+    if (!fichier) return introuvable(res, 'Photo');
+    await Stockage.envoyer(res, 'reponses', fichier);
   } catch (err) {
     next(err);
   }

@@ -13,7 +13,9 @@ const db = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   // Les dates arrivent en texte « AAAA-MM-JJ HH:MM:SS », sans conversion de fuseau horaire
-  dateStrings: true
+  dateStrings: true,
+  // Bases en ligne (TiDB Cloud, Aiven…) : connexion chiffrée obligatoire → DB_SSL=true dans .env
+  ssl: process.env.DB_SSL === 'true' ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined
 });
 
 // Appelé au démarrage pour afficher un message clair si MySQL est éteint ou mal configuré

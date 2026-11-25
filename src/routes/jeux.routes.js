@@ -10,6 +10,7 @@ const { requireAuth } = require('../middlewares/auth');
 const { envoyerRecu } = require('../services/recu');
 const { journaliser } = require('../utils/journal');
 const upload = require('../middlewares/upload');
+const Stockage = require('../services/stockage');
 
 const router = express.Router();
 
@@ -169,11 +170,8 @@ async function chargerParticipation(req, res, next) {
 router.get('/jeux/:id/formulaire', requireAuth, sansCache, chargerJeu, chargerParticipation, async (req, res, next) => {
   try {
     const jeu = await Jeux.trouver(req.jeu.id);
-    const chemin = upload.cheminFormulaire(jeu?.formulaire_pdf);
-    if (!chemin) return res.status(404).json({ error: 'Le questionnaire PDF n\'est pas encore disponible.' });
-    res.download(chemin, jeu.formulaire_nom || 'questionnaire.pdf', (err) => {
-      if (err && !res.headersSent) res.status(404).json({ error: 'Questionnaire PDF introuvable.' });
-    });
+    if (!jeu?.formulaire_pdf) return res.status(404).json({ error: 'Le questionnaire PDF n\'est pas encore disponible.' });
+    await Stockage.envoyer(res, 'formulaires', jeu.formulaire_pdf, { telechargement: jeu.formulaire_nom || 'questionnaire.pdf' });
   } catch (err) {
     next(err);
   }
@@ -233,9 +231,9 @@ router.post('/jeux/:id/soumission', requireAuth, limiteurPaiement, chargerJeu, c
 // Revoir une de ses photos envoyées (n = 1, 2, …)
 router.get('/jeux/:id/mes-photos/:n', requireAuth, sansCache, chargerJeu, chargerParticipation, (req, res) => {
   const n = idValide(req.params.n);
-  const chemin = n && upload.cheminPhotoReponse(req.participation.photos[n - 1]);
-  if (!chemin) return res.status(404).json({ error: 'Photo introuvable' });
-  res.sendFile(chemin, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Photo introuvable' }); });
+  const fichier = n && req.participation.photos[n - 1];
+  if (!fichier) return res.status(404).json({ error: 'Photo introuvable' });
+  return Stockage.envoyer(res, 'reponses', fichier);
 });
 
 // Espace membre : toutes mes participations

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const multer = require('multer');
+const Stockage = require('../services/stockage');
 
 const DOSSIER_IMAGES = path.join(__dirname, '..', 'public', 'uploads', 'images');
 fs.mkdirSync(DOSSIER_IMAGES, { recursive: true });
@@ -68,6 +69,22 @@ function contenuImageValide(fichier) {
 function supprimerFichier(chemin) {
   if (!chemin) return;
   try { fs.rmSync(chemin, { force: true }); } catch (err) { console.error('Suppression impossible :', err.message); }
+  // Fichier déjà copié dans Cloudflare R2 : on le retire aussi
+  if (Stockage.r2Actif()) {
+    const categorie = Object.keys(Stockage.DOSSIERS).find((c) => path.dirname(path.resolve(chemin)) === path.resolve(Stockage.DOSSIERS[c]));
+    if (categorie) Stockage.supprimer(categorie, path.basename(chemin));
+  }
+}
+
+// Copie les fichiers validés dans R2 (en mode R2) ; en cas d'échec, tout est annulé
+async function deposerTous(liste) {
+  try {
+    await Promise.all(liste.map(([categorie, f]) => Stockage.deposer(categorie, f.filename, f.path)));
+  } catch (err) {
+    liste.forEach(([, f]) => supprimerFichier(f.path));
+    console.error(err.message);
+    throw Object.assign(new Error('Le fichier n\'a pas pu être enregistré pour le moment. Réessayez dans quelques minutes.'), { status: 502 });
+  }
 }
 
 /**
@@ -97,7 +114,7 @@ function image(champ, { svg = false } = {}) {
       return next(erreurFichier(champ, "Le fichier envoyé n'est pas une image valide"));
     }
     req.file.cheminPublic = `/uploads/images/${req.file.filename}`;
-    next();
+    deposerTous([['images', req.file]]).then(() => next(), next);
   });
 }
 
@@ -128,7 +145,7 @@ function images(champ, maximum = 20) {
       return next(erreurFichier(champ, `« ${invalide.originalname} » n'est pas une image valide`));
     }
     req.images = fichiers.map((f) => `/uploads/images/${f.filename}`);
-    next();
+    deposerTous(fichiers.map((f) => ['images', f])).then(() => next(), next);
   });
 }
 
@@ -180,7 +197,10 @@ function imageEtPdf() {
         .replace(/\.pdf$/i, '').replace(/[^\p{L}\p{N} _.'’-]/gu, '').trim().slice(0, 100) || 'formulaire';
       req.pdf = { fichier: pdf.filename, nom: `${nom}.pdf`, chemin: pdf.path };
     }
-    next();
+    const depots = [];
+    if (image) depots.push(['images', image]);
+    if (pdf) depots.push(['formulaires', pdf]);
+    deposerTous(depots).then(() => next(), next);
   });
 }
 
@@ -214,7 +234,7 @@ function photosReponses() {
       return next(erreurFichier('photos', `« ${invalide.originalname} » n'est pas une image valide`));
     }
     req.photos = fichiers.map((f) => f.filename);
-    next();
+    deposerTous(fichiers.map((f) => ['reponses', f])).then(() => next(), next);
   });
 }
 

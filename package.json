@@ -8,7 +8,9 @@
     "creer-super-admin": "node scripts/creer-super-admin.js",
     "dev": "node --watch src/app.js",
     "tester-email": "node scripts/tester-email.js",
-    "remplir-contenu": "node scripts/remplir-contenu.js"
+    "remplir-contenu": "node scripts/remplir-contenu.js",
+    "creer-tables": "node scripts/creer-tables.js",
+    "envoyer-fichiers-r2": "node scripts/envoyer-fichiers-r2.js"
   },
   "keywords": [],
   "author": "Dovonon brave",

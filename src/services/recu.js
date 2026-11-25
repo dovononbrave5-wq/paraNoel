@@ -3,9 +3,8 @@
 const Jeux = require('../models/jeux.model');
 const User = require('../models/user.model');
 const Evenement = require('../models/evenement.model');
-const fs = require('fs/promises');
 const { sendRecuPaiement } = require('../config/mailer');
-const { cheminFormulaire } = require('../middlewares/upload');
+const Stockage = require('./stockage');
 
 // « 2026-11-25 19:31:00 » → « 25/11/2026 à 19:31 »
 function dateLisible(valeur) {
@@ -42,10 +41,9 @@ async function envoyerRecu(paiement) {
 
   // Formulaire PDF ajouté par l'administrateur sur ce jeu : joint au reçu
   const pieces = [];
-  const cheminPdf = cheminFormulaire(jeu?.formulaire_pdf);
-  if (cheminPdf) {
+  if (jeu?.formulaire_pdf) {
     try {
-      pieces.push({ nom: jeu.formulaire_nom || 'formulaire.pdf', contenu: await fs.readFile(cheminPdf) });
+      pieces.push({ nom: jeu.formulaire_nom || 'questionnaire.pdf', contenu: await Stockage.lire('formulaires', jeu.formulaire_pdf) });
     } catch (err) {
       console.error(`Formulaire PDF du jeu ${jeu.id} introuvable :`, err.message);
     }

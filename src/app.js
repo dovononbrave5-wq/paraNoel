@@ -25,6 +25,7 @@ const adminRoutes = require('./routes/admin.routes');
 const membreRoutes = require('./routes/membre.routes');
 const kkiapay = require('./services/kkiapay');
 const mailer = require('./config/mailer');
+const Stockage = require('./services/stockage');
 const Inscription = require('./models/inscription.model');
 const Jeux = require('./models/jeux.model');
 const Galerie = require('./models/galerie.model');
@@ -66,6 +67,8 @@ app.use((req, res, next) => {
 
 // Fichiers statiques (CSS, JS, images, images envoyées depuis l'administration)
 app.use(express.static(PUBLIC_DIR, { index: false, maxAge: isProd ? '1d' : 0 }));
+// Images envoyées depuis l'administration quand elles sont stockées dans Cloudflare R2
+app.get('/uploads/images/:fichier', (req, res) => Stockage.envoyer(res, 'images', req.params.fichier, { cache: 'public, max-age=86400' }));
 
 // Sessions enregistrées dans MySQL (table « sessions », créée automatiquement) :
 // elles survivent à un redémarrage du serveur, contrairement à la mémoire
@@ -160,4 +163,5 @@ app.listen(PORT, () => {
   Inscription.creerTable().catch((err) => console.error('Table des inscriptions en attente :', err.code || err.message));
   kkiapay.verifierConfiguration();
   mailer.verifierConfiguration();
+  Stockage.verifierConfiguration();
 });

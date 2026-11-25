@@ -3,10 +3,9 @@
 //          npm run remplir-contenu -- --tout  → remplace aussi les textes de l'événement déjà saisis
 // Tout reste modifiable ensuite dans l'administration.
 require('dotenv').config();
-const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const db = require('../src/config/db');
+const Stockage = require('../src/services/stockage');
 
 const TOUT = process.argv.includes('--tout');
 
@@ -50,15 +49,10 @@ const JEU = {
   rencontre_infos: "Présente-toi 30 minutes avant le début avec une pièce d'identité et l'e-mail de reçu de ton paiement."
 };
 
-// Questionnaire PDF d'exemple (scripts/exemple-questionnaire.pdf), copié dans le dossier privé des formulaires
+// Questionnaire PDF d'exemple (scripts/exemple-questionnaire.pdf), copié dans le stockage
+// des formulaires : dossier privé en local, ou Cloudflare R2 si les variables R2_* sont remplies
 const PDF_EXEMPLE = path.join(__dirname, 'exemple-questionnaire.pdf');
-const DOSSIER_FORMULAIRES = path.join(__dirname, '..', 'prive', 'formulaires');
-function copierPdfExemple() {
-  fs.mkdirSync(DOSSIER_FORMULAIRES, { recursive: true });
-  const fichier = `${crypto.randomBytes(16).toString('hex')}.pdf`;
-  fs.copyFileSync(PDF_EXEMPLE, path.join(DOSSIER_FORMULAIRES, fichier));
-  return fichier;
-}
+const copierPdfExemple = () => Stockage.importer('formulaires', PDF_EXEMPLE);
 
 const vide = (v) => v === null || v === undefined || String(v).trim() === '';
 
@@ -106,7 +100,7 @@ async function remplirJeu() {
   if (existant && !existant.formulaire_pdf) {
     await db.execute(
       'UPDATE jeux SET formulaire_pdf = ?, formulaire_nom = ?, nb_reponses = ?, description = ?, reglement = ? WHERE id = ?',
-      [copierPdfExemple(), 'Questionnaire - Le Grand Quiz de Noel.pdf', JEU.nb_reponses, JEU.description, JEU.reglement, existant.id]
+      [await copierPdfExemple(), 'Questionnaire - Le Grand Quiz de Noel.pdf', JEU.nb_reponses, JEU.description, JEU.reglement, existant.id]
     );
     return 'pdf-ajoute';
   }
@@ -117,7 +111,7 @@ async function remplirJeu() {
     `INSERT INTO jeux (titre, description, reglement, prix, date_ouverture, date_cloture, nb_reponses, formulaire_pdf, formulaire_nom,
                        statut, rencontre_date, rencontre_lieu, rencontre_infos, rencontre_publiee)
      VALUES (?, ?, ?, ?, NOW(), '2026-12-15 23:59:00', ?, ?, ?, 'publie', '2026-12-20 17:00:00', ?, ?, 0)`,
-    [JEU.titre, JEU.description, JEU.reglement, JEU.prix, JEU.nb_reponses, copierPdfExemple(), 'Questionnaire - Le Grand Quiz de Noel.pdf',
+    [JEU.titre, JEU.description, JEU.reglement, JEU.prix, JEU.nb_reponses, await copierPdfExemple(), 'Questionnaire - Le Grand Quiz de Noel.pdf',
      JEU.rencontre_lieu, JEU.rencontre_infos]
   );
   return true;
