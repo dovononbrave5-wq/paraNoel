@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para'Noel | 3e édition : fête et jeux concours de Noël</title>
+  <meta name="description" content="Para'Noel, 3e édition : la fête de Noël, ses jeux concours et sa rencontre en présentiel. Participez en ligne, paiement par Mobile Money.">
+  <meta property="og:title" content="Para'Noel | 3e édition : fête et jeux concours de Noël">
+  <meta property="og:description" content="Para'Noel, 3e édition : la fête de Noël, ses jeux concours et sa rencontre en présentiel. Participez en ligne, paiement par Mobile Money.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/images/logo-paranoel.svg">
+  <meta name="theme-color" content="#0e3b2e">
+  <link rel="icon" type="image/svg+xml" href="/images/icone-paranoel.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&amp;family=Nunito:wght@400;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- ================= EN-TÊTE (identique sur toutes les pages) ================= -->
+  <header class="entete">
+    <div class="conteneur entete__interieur">
+      <a class="entete__logo" href="/" aria-label="Para'Noel, retour à l'accueil">
+        <img src="/images/logo-paranoel.svg" alt="Para'Noel" width="190" height="53">
+      </a>
+
+      <!-- Menu mobile : ouverture gérée par menu.js -->
+      <button class="menu-bouton" type="button" aria-expanded="false" aria-controls="menu-principal">
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="sr-only">Ouvrir le menu</span>
+      </button>
+
+      <nav class="nav" id="menu-principal" aria-label="Navigation principale">
+        <ul class="nav__liste">
+          <li><a href="/" aria-current="page">Accueil</a></li>
+          <li><a href="/jeux">Jeux</a></li>
+          <li><a href="/participer">Participer</a></li>
+          <li><a href="/annonces">Annonces</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+        <div class="nav__actions">
+          <a class="bouton bouton--contour" href="/login">Se connecter</a>
+          <a class="bouton bouton--rouge" href="/register">S'inscrire</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu">
+    <!-- =====================================================================
+         CONTENU DYNAMIQUE : les textes viennent de l'administration.
+         - data-info="cle"   → site.js écrit la valeur de /api/public/evenement
+         - .liste-dynamique  → listes.js charge data-source et clone le <template> data-modele
+         ===================================================================== -->
+    <section class="hero" aria-labelledby="titre-hero">
+      <div class="neige" aria-hidden="true"></div>
+      <div class="conteneur hero__interieur">
+        <div class="hero__texte-bloc">
+          <p class="hero__edition"><span data-info="edition_libelle">3e édition</span> <span class="hero__annee" data-info="annee">2026</span></p>
+          <h1 id="titre-hero" class="hero__titre">Para'Noel</h1>
+          <p class="hero__slogan" data-info="slogan">La magie de Noël, en grand&nbsp;!</p>
+          <p class="hero__texte" data-info="presentation">Fête, jeux concours et partage : pour sa troisième édition, Para'Noel vous donne rendez-vous pour célébrer Noël ensemble.</p>
+          <div class="hero__actions">
+            <a class="bouton bouton--rouge" href="/participer">Participer au jeu concours</a>
+            <a class="bouton bouton--clair" href="/jeux">Voir les jeux</a>
+          </div>
+        </div>
+
+        <!-- Compte à rebours jusqu'à la date de l'événement (compte-a-rebours.js) -->
+        <aside class="compte" data-compte-a-rebours aria-labelledby="titre-compte" hidden>
+          <p class="compte__titre" id="titre-compte">Le grand jour arrive</p>
+          <div class="compte__cases" role="timer" aria-live="off">
+            <p class="compte__case"><span class="compte__nombre" data-unite="jours">0</span><span class="compte__unite">jours</span></p>
+            <p class="compte__case"><span class="compte__nombre" data-unite="heures">0</span><span class="compte__unite">heures</span></p>
+            <p class="compte__case"><span class="compte__nombre" data-unite="minutes">0</span><span class="compte__unite">min</span></p>
+            <p class="compte__case"><span class="compte__nombre" data-unite="secondes">0</span><span class="compte__unite">s</span></p>
+          </div>
+          <p class="compte__lieu"><time data-compte-date></time> <span data-info="lieu"></span></p>
+        </aside>
+      </div>
+    </section>
+
+
+    <section class="section" aria-labelledby="titre-jeux">
+      <div class="conteneur">
+        <header class="section__entete">
+          <p class="surtitre">Jeu concours</p>
+          <h2 id="titre-jeux">Les questionnaires ouverts en ce moment</h2>
+          <p>Réponds en ligne, puis retrouve les meilleurs participants à la rencontre en présentiel.</p>
+        </header>
+        <div class="liste-dynamique" data-source="/api/public/jeux?phase=ouvert&amp;limite=3" data-modele="modele-jeu-accueil">
+          <ul class="grille grille--3" data-liste></ul>
+          <p class="etat" data-etat="chargement">Chargement…</p>
+          <p class="etat" data-etat="vide" hidden>Aucun questionnaire n'est ouvert pour le moment. Revenez bientôt ou consultez les annonces.</p>
+          <p class="etat etat--erreur" data-etat="erreur" hidden>Le contenu ne peut pas être chargé pour le moment. Réessayez plus tard.</p>
+          <template id="modele-jeu-accueil">
+            <li class="jeu" data-categorie-depuis="phase">
+              <img class="jeu__image" data-champ="image" src="/images/icone-paranoel.svg" alt="" width="640" height="360" loading="lazy">
+              <div class="jeu__corps">
+                <p class="badge badge--phase" data-champ="phase_libelle" data-classe-depuis="phase"></p>
+                <h3 class="jeu__titre" data-champ="titre">Jeu concours</h3>
+                <p class="jeu__description" data-champ="description"></p>
+                <ul class="jeu__infos">
+                  <li><span class="jeu__infos-libelle">Participation</span> <strong data-champ="prix_libelle"></strong></li>
+                  <li><span class="jeu__infos-libelle">Réponses</span> <strong><span data-champ="nb_reponses"></span> cases</strong></li>
+                  <li><span class="jeu__infos-libelle">Ouverture</span> <time data-champ-date="date_ouverture" data-avec-heure></time></li>
+                  <li><span class="jeu__infos-libelle">Clôture des réponses</span> <time data-champ-date="date_cloture" data-avec-heure></time></li>
+                </ul>
+                <div class="jeu__rencontre" data-si-rempli="rencontre_date" hidden>
+                  <p class="jeu__rencontre-titre">Rencontre en présentiel</p>
+                  <p><time data-champ-date="rencontre_date" data-avec-heure></time> · <span data-champ="rencontre_lieu"></span></p>
+                  <p class="jeu__rencontre-infos" data-champ="rencontre_infos"></p>
+                </div>
+                <a class="bouton bouton--rouge jeu__bouton" href="/participer" data-lien-depuis="lien" data-si="phase:ouvert">Participer</a>
+              </div>
+            </li>
+          </template>
+        </div>
+        <p class="section__suite"><a class="bouton bouton--contour" href="/jeux">Tous les jeux</a></p>
+      </div>
+    </section>
+
+    <section class="section section--claire" aria-labelledby="titre-etapes">
+      <div class="conteneur">
+        <header class="section__entete">
+          <p class="surtitre">Comment participer</p>
+          <h2 id="titre-etapes">Quatre étapes jusqu'à la finale</h2>
+        </header>
+        <ol class="etapes">
+          <li class="etape"><h3 class="etape__titre">Crée ton compte</h3><p>Inscris-toi gratuitement et confirme ton adresse e-mail.</p></li>
+          <li class="etape"><h3 class="etape__titre">Achète le questionnaire</h3><p>MTN MoMo, Moov Money ou Celtiis Cash, en toute sécurité.</p></li>
+          <li class="etape"><h3 class="etape__titre">Remplis le questionnaire</h3><p>Télécharge le PDF, puis envoie tes réponses dans les cases ou en photo. Tu peux les modifier jusqu'à la clôture.</p></li>
+          <li class="etape"><h3 class="etape__titre">Finale en présentiel</h3><p>Après la clôture, l'organisation examine toutes les réponses : les meilleurs sont invités à la finale.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Galerie des éditions passées : photos ajoutées par le super-administrateur (galerie.js) -->
+    <section class="section" aria-labelledby="titre-galerie" data-galerie hidden>
+      <div class="conteneur">
+        <header class="section__entete">
+          <p class="surtitre">Souvenirs</p>
+          <h2 id="titre-galerie">Les éditions passées en images</h2>
+          <p>Revivez les plus beaux moments de Para'Noel : jeux, rires, remises de prix et magie de Noël.</p>
+        </header>
+        <div class="galerie" data-galerie-liste></div>
+      </div>
+      <dialog class="galerie-zoom" data-galerie-zoom aria-label="Photo agrandie">
+        <form method="dialog"><button class="galerie-zoom__fermer" type="submit" aria-label="Fermer">×</button></form>
+        <img alt="">
+        <p class="galerie-zoom__legende"></p>
+      </dialog>
+    </section>
+
+    <section class="section" aria-labelledby="titre-annonces">
+      <div class="conteneur">
+        <header class="section__entete">
+          <p class="surtitre">Annonces</p>
+          <h2 id="titre-annonces">Les dernières nouvelles</h2>
+        </header>
+        <div class="liste-dynamique" data-source="/api/public/annonces?limite=3" data-modele="modele-annonce-courte">
+          <ul class="grille grille--3" data-liste></ul>
+          <p class="etat" data-etat="chargement">Chargement…</p>
+          <p class="etat" data-etat="vide" hidden>Les premières annonces arrivent bientôt.</p>
+          <p class="etat etat--erreur" data-etat="erreur" hidden>Le contenu ne peut pas être chargé pour le moment. Réessayez plus tard.</p>
+          <template id="modele-annonce-courte">
+            <li class="carte">
+              <p class="badge" data-champ="type_libelle"></p>
+              <h3 class="carte__titre" data-champ="titre">Annonce</h3>
+              <p class="carte__date"><time data-champ-date="date_publication"></time></p>
+              <p class="carte__extrait" data-champ="description"></p>
+              <a class="carte__lien" href="/annonces">Lire la suite <span aria-hidden="true">→</span></a>
+            </li>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <section class="appel" aria-labelledby="titre-appel">
+      <div class="conteneur appel__interieur">
+        <div>
+          <h2 id="titre-appel">Prêt à tenter ta chance&nbsp;?</h2>
+          <p>Crée ton compte, achète le questionnaire par Mobile Money et envoie tes réponses en ligne.</p>
+        </div>
+        <div class="appel__actions">
+          <a class="bouton bouton--rouge" href="/participer">Participer</a>
+          <a class="bouton bouton--clair" href="/register">Créer mon compte</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= PIED DE PAGE (identique sur toutes les pages) =================
+       Les éléments data-info sont remplis par site.js avec les informations saisies par le super-administrateur. -->
+  <footer class="pied">
+    <div class="pied__guirlande" aria-hidden="true"></div>
+    <div class="conteneur pied__grille">
+      <section class="pied__bloc pied__marque" aria-label="L'événement">
+        <img src="/images/logo-paranoel-blanc.svg" alt="Para'Noel" width="214" height="59" loading="lazy">
+        <p data-info="description_courte">Le rendez-vous de Noël : jeux, fête et partage.</p>
+      </section>
+
+      <nav class="pied__bloc" aria-label="Pages du site">
+        <h2 class="pied__titre">Le site</h2>
+        <ul>
+          <li><a href="/jeux">Jeux concours</a></li>
+          <li><a href="/participer">Participer</a></li>
+          <li><a href="/annonces">Annonces</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <nav class="pied__bloc" aria-label="Mon compte">
+        <h2 class="pied__titre">Mon compte</h2>
+        <ul>
+          <li><a href="/register">S'inscrire</a></li>
+          <li><a href="/login">Se connecter</a></li>
+          <li><a href="/dashboard">Mon espace</a></li>
+        </ul>
+        <p class="pied__paiement">Paiement sécurisé par Mobile Money&nbsp;: <strong>MTN&nbsp;MoMo</strong>, <strong>Moov&nbsp;Money</strong>, <strong>Celtiis&nbsp;Cash</strong></p>
+      </nav>
+
+      <section class="pied__bloc" aria-label="Coordonnées">
+        <h2 class="pied__titre">Contact</h2>
+        <address>
+          <p data-info="adresse"></p>
+          <p data-masquer-si-vide hidden><a data-info="telephone" data-lien="tel" href="/contact">Téléphone</a></p>
+          <p data-masquer-si-vide hidden><a data-info="email" data-lien="mailto" href="/contact">E-mail</a></p>
+          <p data-info="horaires" data-format="lignes"></p>
+        </address>
+      </section>
+    </div>
+
+    <div class="conteneur pied__bas">
+      <p>© <span id="annee">2026</span> <span data-info="nom">Para'Noel</span>. Tous droits réservés.</p>
+      <nav aria-label="Réseaux sociaux">
+        <ul class="pied__reseaux">
+          <li data-masquer-si-vide hidden><a data-info="facebook" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">Facebook</a></li>
+          <li data-masquer-si-vide hidden><a data-info="instagram" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">Instagram</a></li>
+          <li data-masquer-si-vide hidden><a data-info="tiktok" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">TikTok</a></li>
+          <li data-masquer-si-vide hidden><a data-info="whatsapp" data-lien="whatsapp" data-garder-texte href="/contact" rel="noopener" target="_blank">WhatsApp</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Scripts dans des fichiers séparés (Helmet bloque le JavaScript écrit dans la page) -->
+  <script src="/js/menu.js" defer></script>
+  <script src="/js/site.js" defer></script>
+  <script src="/js/listes.js" defer></script>
+  <script src="/js/compteurs.js" defer></script>
+  <script src="/js/compte-a-rebours.js" defer></script>
+  <script src="/js/galerie.js" defer></script>
+</body>
+</html>

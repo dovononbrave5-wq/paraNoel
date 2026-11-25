@@ -1,0 +1,36 @@
+{
+  "name": "para-noel",
+  "version": "1.0.0",
+  "description": "Site de l'événement Para'Noel : annonces, jeux concours payants par Mobile Money (KKiaPay), espace membre et administration",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "creer-super-admin": "node scripts/creer-super-admin.js",
+    "dev": "node --watch src/app.js",
+    "tester-email": "node scripts/tester-email.js",
+    "remplir-contenu": "node scripts/remplir-contenu.js"
+  },
+  "keywords": [],
+  "author": "Dovonon brave",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "express-mysql-session": "^3.0.3",
+    "express-rate-limit": "^8.7.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.5.0",
+    "mysql2": "^3.24.6",
+    "nodemailer": "^10.2.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

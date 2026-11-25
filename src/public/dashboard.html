@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon espace | Para'Noel</title>
+    <meta name="theme-color" content="#0e3b2e">
+    <link rel="icon" type="image/svg+xml" href="/images/icone-paranoel.svg">
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&amp;family=Nunito:wght@400;600;700;800&amp;display=swap">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="espace">
+    <!-- Page protégée : le serveur ne l'envoie qu'aux utilisateurs connectés (requireAuth) -->
+    <header class="topbar">
+        <a class="topbar__logo" href="/" aria-label="Retour au site Para'Noel">
+            <img src="/images/logo-paranoel-blanc.svg" alt="Para'Noel" width="160" height="44">
+        </a>
+        <h1>Mon espace</h1>
+        <a class="topbar__lien" href="/jeux">Les jeux</a>
+        <button type="button" id="logout-btn">Se déconnecter</button>
+    </header>
+
+    <main class="tdb" aria-busy="true">
+        <div id="alerte-page" class="alerte" aria-live="polite"></div>
+
+        <!-- Bandeau d'accueil -->
+        <section class="tdb-accueil" aria-labelledby="tdb-salut">
+            <div>
+                <p class="tdb-accueil__sur-titre" id="tdb-date"></p>
+                <h2 id="tdb-salut">Bonjour </h2>
+                <p class="tdb-accueil__texte" id="tdb-resume">Chargement de ton espace…</p>
+                <p class="tdb-accueil__badges">
+                    <span class="badge badge--or" id="tdb-role"></span>
+                    <span class="badge" id="tdb-verifie"></span>
+                </p>
+            </div>
+            <div class="tdb-compte-a-rebours" id="tdb-rebours" hidden>
+                <p class="tdb-compte-a-rebours__titre" id="tdb-rebours-titre">Le grand jour</p>
+                <p class="tdb-compte-a-rebours__valeur"><strong id="tdb-rebours-jours">0</strong> <span id="tdb-rebours-unite">jours</span></p>
+                <p class="tdb-compte-a-rebours__date" id="tdb-rebours-date"></p>
+            </div>
+        </section>
+
+        <!-- Lien d'administration (rôles admin et super_admin) -->
+        <section class="card tdb-admin" id="lien-admin" hidden>
+            <p><strong>Tu es administrateur.</strong> Gère les jeux, les annonces et les inscrits.</p>
+            <a class="bouton bouton--contour bouton--petit" href="/admin">Ouvrir l'administration →</a>
+        </section>
+
+        <!-- Chiffres clés -->
+        <section class="tdb-stats" aria-label="Mes chiffres">
+            <article class="tdb-stat">
+                <p class="tdb-stat__valeur" id="stat-participations">–</p>
+                <p class="tdb-stat__libelle">Jeux rejoints</p>
+            </article>
+            <article class="tdb-stat">
+                <p class="tdb-stat__valeur" id="stat-a-terminer">–</p>
+                <p class="tdb-stat__libelle">Réponses à envoyer</p>
+            </article>
+            <article class="tdb-stat">
+                <p class="tdb-stat__valeur" id="stat-retenues">–</p>
+                <p class="tdb-stat__libelle">Fois retenu(e)</p>
+            </article>
+            <article class="tdb-stat">
+                <p class="tdb-stat__valeur" id="stat-depense">–</p>
+                <p class="tdb-stat__libelle">Total payé</p>
+            </article>
+        </section>
+
+        <div class="tdb-grille">
+            <div class="tdb-colonne">
+                <section class="card" aria-labelledby="titre-participations">
+                    <div class="tdb-titre">
+                        <h2 id="titre-participations">Mes participations</h2>
+                        <a href="/jeux" class="tdb-titre__lien">Voir tous les jeux</a>
+                    </div>
+                    <div id="mes-participations">
+                        <p class="tdb-vide">Chargement…</p>
+                    </div>
+                </section>
+
+                <section class="card" aria-labelledby="titre-rencontres" id="bloc-rencontres" hidden>
+                    <h2 id="titre-rencontres">Mes finales en présentiel</h2>
+                    <ul class="tdb-liste" id="mes-rencontres"></ul>
+                </section>
+
+                <section class="card" aria-labelledby="titre-paiements">
+                    <h2 id="titre-paiements">Historique des paiements</h2>
+                    <p class="tdb-aide">Après chaque paiement, ton reçu est envoyé automatiquement sur ton e-mail. Tu peux le redemander ici.</p>
+                    <div id="recu-resultat" class="alerte" aria-live="polite"></div>
+                    <div id="mes-paiements">
+                        <p class="tdb-vide">Chargement…</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="tdb-colonne">
+                <section class="card" aria-labelledby="titre-jeux">
+                    <h2 id="titre-jeux">Jeux à découvrir</h2>
+                    <ul class="tdb-liste" id="jeux-a-decouvrir">
+                        <li class="tdb-vide">Chargement…</li>
+                    </ul>
+                </section>
+
+                <section class="card" aria-labelledby="titre-compte">
+                    <h2 id="titre-compte">Mon compte</h2>
+                    <dl class="tdb-infos">
+                        <dt>E-mail</dt>
+                        <dd id="user-email">…</dd>
+                        <dt>N° de membre</dt>
+                        <dd id="user-id">…</dd>
+                        <dt>Inscrit le</dt>
+                        <dd id="user-inscription">…</dd>
+                        <dt>Dernière connexion</dt>
+                        <dd id="user-connexion">…</dd>
+                        <dt>Connexion</dt>
+                        <dd id="user-methode">…</dd>
+                    </dl>
+
+                    <details class="tdb-mdp" id="bloc-mdp">
+                        <summary id="mdp-titre">Changer mon mot de passe</summary>
+                        <form id="form-mdp" novalidate>
+                            <div class="field" id="champ-actuel">
+                                <label for="mdp-actuel">Mot de passe actuel</label>
+                                <input type="password" id="mdp-actuel" autocomplete="current-password">
+                            </div>
+                            <div class="field">
+                                <label for="mdp-nouveau">Nouveau mot de passe</label>
+                                <input type="password" id="mdp-nouveau" autocomplete="new-password" minlength="8" required>
+                                <small class="field__aide">8 caractères minimum, avec une majuscule, une minuscule, un chiffre et un caractère spécial.</small>
+                            </div>
+                            <div class="field">
+                                <label for="mdp-confirmation">Confirmer le nouveau mot de passe</label>
+                                <input type="password" id="mdp-confirmation" autocomplete="new-password" required>
+                            </div>
+                            <div id="mdp-resultat" class="alerte" aria-live="polite"></div>
+                            <button type="submit" class="bouton bouton--rouge bouton--petit" id="mdp-bouton">Enregistrer</button>
+                        </form>
+                    </details>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/alerte.js" defer></script>
+    <script src="/js/dashboard.js" defer></script>
+</body>
+</html>

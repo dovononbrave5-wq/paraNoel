@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeux concours | Para'Noel</title>
+  <meta name="description" content="Les jeux concours de Para'Noel : questionnaire en ligne payant par Mobile Money, puis rencontre en présentiel.">
+  <meta property="og:title" content="Jeux concours | Para'Noel">
+  <meta property="og:description" content="Les jeux concours de Para'Noel : questionnaire en ligne payant par Mobile Money, puis rencontre en présentiel.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/images/logo-paranoel.svg">
+  <meta name="theme-color" content="#0e3b2e">
+  <link rel="icon" type="image/svg+xml" href="/images/icone-paranoel.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&amp;family=Nunito:wght@400;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- ================= EN-TÊTE (identique sur toutes les pages) ================= -->
+  <header class="entete">
+    <div class="conteneur entete__interieur">
+      <a class="entete__logo" href="/" aria-label="Para'Noel, retour à l'accueil">
+        <img src="/images/logo-paranoel.svg" alt="Para'Noel" width="190" height="53">
+      </a>
+
+      <!-- Menu mobile : ouverture gérée par menu.js -->
+      <button class="menu-bouton" type="button" aria-expanded="false" aria-controls="menu-principal">
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="sr-only">Ouvrir le menu</span>
+      </button>
+
+      <nav class="nav" id="menu-principal" aria-label="Navigation principale">
+        <ul class="nav__liste">
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/jeux" aria-current="page">Jeux</a></li>
+          <li><a href="/participer">Participer</a></li>
+          <li><a href="/annonces">Annonces</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+        <div class="nav__actions">
+          <a class="bouton bouton--contour" href="/login">Se connecter</a>
+          <a class="bouton bouton--rouge" href="/register">S'inscrire</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu">
+    <section class="bandeau" aria-labelledby="titre-page">
+      <div class="neige" aria-hidden="true"></div>
+      <div class="conteneur">
+        <p class="surtitre">Jeux concours</p>
+        <h1 id="titre-page">Les jeux de Para'Noel</h1>
+        <p class="bandeau__texte">Chaque jeu commence par un questionnaire en ligne, payant. Les meilleurs participants sont invités à la rencontre en présentiel.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Liste des jeux">
+      <div class="conteneur">
+        <div class="filtres" role="group" aria-label="Filtrer les jeux">
+          <button class="filtre" type="button" data-filtre="tous" aria-pressed="true">Tous</button>
+          <button class="filtre" type="button" data-filtre="ouvert" aria-pressed="false">Ouverts</button>
+          <button class="filtre" type="button" data-filtre="a-venir" aria-pressed="false">Bientôt</button>
+          <button class="filtre" type="button" data-filtre="clos" aria-pressed="false">Clôturés</button>
+        </div>
+        <div class="liste-dynamique" data-source="/api/public/jeux" data-modele="modele-jeu">
+          <ul class="grille grille--3" id="liste-filtrable" data-liste></ul>
+          <p class="etat" data-etat="chargement">Chargement…</p>
+          <p class="etat" data-etat="vide" hidden>Aucun jeu n'est encore publié. Les jeux de cette édition arrivent bientôt.</p>
+          <p class="etat etat--erreur" data-etat="erreur" hidden>Le contenu ne peut pas être chargé pour le moment. Réessayez plus tard.</p>
+          <template id="modele-jeu">
+            <li class="jeu" data-categorie-depuis="phase">
+              <img class="jeu__image" data-champ="image" src="/images/icone-paranoel.svg" alt="" width="640" height="360" loading="lazy">
+              <div class="jeu__corps">
+                <p class="badge badge--phase" data-champ="phase_libelle" data-classe-depuis="phase"></p>
+                <h3 class="jeu__titre" data-champ="titre">Jeu concours</h3>
+                <p class="jeu__description" data-champ="description"></p>
+                <ul class="jeu__infos">
+                  <li><span class="jeu__infos-libelle">Participation</span> <strong data-champ="prix_libelle"></strong></li>
+                  <li><span class="jeu__infos-libelle">Durée</span> <strong><span data-champ="duree_minutes"></span> min</strong></li>
+                  <li><span class="jeu__infos-libelle">Ouverture</span> <time data-champ-date="date_ouverture" data-avec-heure></time></li>
+                  <li><span class="jeu__infos-libelle">Clôture</span> <time data-champ-date="date_cloture" data-avec-heure></time></li>
+                </ul>
+                <div class="jeu__rencontre" data-si-rempli="rencontre_date" hidden>
+                  <p class="jeu__rencontre-titre">Rencontre en présentiel</p>
+                  <p><time data-champ-date="rencontre_date" data-avec-heure></time> · <span data-champ="rencontre_lieu"></span></p>
+                  <p class="jeu__rencontre-infos" data-champ="rencontre_infos"></p>
+                </div>
+                <a class="bouton bouton--rouge jeu__bouton" href="/participer" data-lien-depuis="lien" data-si="phase:ouvert">Participer</a>
+              </div>
+            </li>
+          </template>
+        </div>
+        <p class="etat" id="aucun-resultat" hidden>Aucun jeu dans cette catégorie pour le moment.</p>
+      </div>
+    </section>
+
+    <section class="appel" aria-labelledby="titre-appel">
+      <div class="conteneur appel__interieur">
+        <div>
+          <h2 id="titre-appel">Prêt à tenter ta chance&nbsp;?</h2>
+          <p>Crée ton compte, paie ta participation par Mobile Money et réponds au questionnaire en ligne.</p>
+        </div>
+        <div class="appel__actions">
+          <a class="bouton bouton--rouge" href="/participer">Participer</a>
+          <a class="bouton bouton--clair" href="/register">Créer mon compte</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= PIED DE PAGE (identique sur toutes les pages) =================
+       Les éléments data-info sont remplis par site.js avec les informations saisies par le super-administrateur. -->
+  <footer class="pied">
+    <div class="pied__guirlande" aria-hidden="true"></div>
+    <div class="conteneur pied__grille">
+      <section class="pied__bloc pied__marque" aria-label="L'événement">
+        <img src="/images/logo-paranoel-blanc.svg" alt="Para'Noel" width="214" height="59" loading="lazy">
+        <p data-info="description_courte">Le rendez-vous de Noël : jeux, fête et partage.</p>
+      </section>
+
+      <nav class="pied__bloc" aria-label="Pages du site">
+        <h2 class="pied__titre">Le site</h2>
+        <ul>
+          <li><a href="/jeux">Jeux concours</a></li>
+          <li><a href="/participer">Participer</a></li>
+          <li><a href="/annonces">Annonces</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <nav class="pied__bloc" aria-label="Mon compte">
+        <h2 class="pied__titre">Mon compte</h2>
+        <ul>
+          <li><a href="/register">S'inscrire</a></li>
+          <li><a href="/login">Se connecter</a></li>
+          <li><a href="/dashboard">Mon espace</a></li>
+        </ul>
+        <p class="pied__paiement">Paiement sécurisé par Mobile Money&nbsp;: <strong>MTN&nbsp;MoMo</strong>, <strong>Moov&nbsp;Money</strong>, <strong>Celtiis&nbsp;Cash</strong></p>
+      </nav>
+
+      <section class="pied__bloc" aria-label="Coordonnées">
+        <h2 class="pied__titre">Contact</h2>
+        <address>
+          <p data-info="adresse"></p>
+          <p data-masquer-si-vide hidden><a data-info="telephone" data-lien="tel" href="/contact">Téléphone</a></p>
+          <p data-masquer-si-vide hidden><a data-info="email" data-lien="mailto" href="/contact">E-mail</a></p>
+          <p data-info="horaires" data-format="lignes"></p>
+        </address>
+      </section>
+    </div>
+
+    <div class="conteneur pied__bas">
+      <p>© <span id="annee">2026</span> <span data-info="nom">Para'Noel</span>. Tous droits réservés.</p>
+      <nav aria-label="Réseaux sociaux">
+        <ul class="pied__reseaux">
+          <li data-masquer-si-vide hidden><a data-info="facebook" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">Facebook</a></li>
+          <li data-masquer-si-vide hidden><a data-info="instagram" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">Instagram</a></li>
+          <li data-masquer-si-vide hidden><a data-info="tiktok" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">TikTok</a></li>
+          <li data-masquer-si-vide hidden><a data-info="whatsapp" data-lien="whatsapp" data-garder-texte href="/contact" rel="noopener" target="_blank">WhatsApp</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Scripts dans des fichiers séparés (Helmet bloque le JavaScript écrit dans la page) -->
+  <script src="/js/menu.js" defer></script>
+  <script src="/js/site.js" defer></script>
+  <script src="/js/listes.js" defer></script>
+  <script src="/js/filtres.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Participer au jeu concours | Para'Noel</title>
+  <meta name="description" content="Participe au jeu concours de Para'Noel : paiement par MTN MoMo, Moov Money ou Celtiis Cash, puis questionnaire en ligne.">
+  <meta property="og:title" content="Participer au jeu concours | Para'Noel">
+  <meta property="og:description" content="Participe au jeu concours de Para'Noel : paiement par MTN MoMo, Moov Money ou Celtiis Cash, puis questionnaire en ligne.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/images/logo-paranoel.svg">
+  <meta name="theme-color" content="#0e3b2e">
+  <link rel="icon" type="image/svg+xml" href="/images/icone-paranoel.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&amp;family=Nunito:wght@400;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- ================= EN-TÊTE (identique sur toutes les pages) ================= -->
+  <header class="entete">
+    <div class="conteneur entete__interieur">
+      <a class="entete__logo" href="/" aria-label="Para'Noel, retour à l'accueil">
+        <img src="/images/logo-paranoel.svg" alt="Para'Noel" width="190" height="53">
+      </a>
+
+      <!-- Menu mobile : ouverture gérée par menu.js -->
+      <button class="menu-bouton" type="button" aria-expanded="false" aria-controls="menu-principal">
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="menu-bouton__barre" aria-hidden="true"></span>
+        <span class="sr-only">Ouvrir le menu</span>
+      </button>
+
+      <nav class="nav" id="menu-principal" aria-label="Navigation principale">
+        <ul class="nav__liste">
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/jeux">Jeux</a></li>
+          <li><a href="/participer" aria-current="page">Participer</a></li>
+          <li><a href="/annonces">Annonces</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+        <div class="nav__actions">
+          <a class="bouton bouton--contour" href="/login">Se connecter</a>
+          <a class="bouton bouton--rouge" href="/register">S'inscrire</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu">
+    <section class="bandeau" aria-labelledby="titre-page">
+      <div class="neige" aria-hidden="true"></div>
+      <div class="conteneur">
+        <p class="surtitre">Participer</p>
+        <h1 id="titre-page">Participe au jeu concours</h1>
+        <p class="bandeau__texte">Un compte, un paiement Mobile Money, un questionnaire chronométré : à toi de jouer !</p>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Participation">
+      <div class="conteneur conteneur--moyen">
+
+        <!-- Messages d'erreur ou d'information du parcours -->
+        <p class="message-parcours" id="message-parcours" role="status" aria-live="polite" hidden></p>
+
+        <!-- 0. Aucun jeu choisi : liste des jeux ouverts (participer.js montre ce bloc si l'adresse n'a pas ?jeu=) -->
+        <div id="choix-jeu" hidden>
+          <h2>Choisis un jeu</h2>
+          <div class="liste-dynamique" data-source="/api/public/jeux?phase=ouvert" data-modele="modele-jeu-choix" data-chargement-manuel>
+            <ul class="liste-choix" data-liste></ul>
+          <p class="etat" data-etat="chargement">Chargement…</p>
+          <p class="etat" data-etat="vide" hidden>Aucun questionnaire n'est ouvert pour le moment. Consultez les annonces pour connaître les prochaines dates.</p>
+          <p class="etat etat--erreur" data-etat="erreur" hidden>Le contenu ne peut pas être chargé pour le moment. Réessayez plus tard.</p>
+            <template id="modele-jeu-choix">
+              <li class="choix-jeu">
+                <div>
+                  <h3 class="choix-jeu__titre" data-champ="titre">Jeu</h3>
+                  <p class="choix-jeu__infos"><strong data-champ="prix_libelle"></strong> · <span data-champ="duree_minutes"></span> min · jusqu'au <time data-champ-date="date_cloture" data-avec-heure></time></p>
+                </div>
+                <a class="bouton bouton--rouge" href="/participer" data-lien-depuis="lien">Choisir</a>
+              </li>
+            </template>
+          </div>
+        </div>
+
+        <!-- 1 à 4. Parcours pour un jeu donné -->
+        <article id="parcours" hidden aria-labelledby="parcours-titre">
+          <header class="parcours__entete">
+            <p class="badge badge--phase" id="parcours-phase"></p>
+            <h2 id="parcours-titre">Jeu concours</h2>
+            <p id="parcours-description"></p>
+            <ul class="parcours__infos">
+              <li>Participation : <strong id="parcours-prix">–</strong></li>
+              <li>Questions : <strong id="parcours-questions">–</strong></li>
+              <li>Durée : <strong id="parcours-duree">–</strong></li>
+              <li>Clôture : <strong><time id="parcours-cloture">–</time></strong></li>
+            </ul>
+          </header>
+
+          <h3 class="sr-only">Étapes de la participation</h3>
+          <ol class="progression">
+            <li data-etape-indicateur="compte">Compte</li>
+            <li data-etape-indicateur="paiement">Paiement</li>
+            <li data-etape-indicateur="questionnaire">Questionnaire</li>
+            <li data-etape-indicateur="rencontre">Rencontre</li>
+          </ol>
+
+          <!-- Étape 1 : connexion requise -->
+          <section class="etape-parcours" data-etape="compte" hidden aria-labelledby="titre-etape-compte">
+            <h3 id="titre-etape-compte">Connecte-toi pour participer</h3>
+            <p>Un compte permet de garder ton paiement et ta participation en sécurité. Un seul essai par compte.</p>
+            <div class="etape-parcours__actions">
+              <a class="bouton bouton--rouge" id="lien-connexion" href="/login">Se connecter</a>
+              <a class="bouton bouton--contour" href="/register">Créer un compte</a>
+            </div>
+          </section>
+
+          <!-- Étape 2 : paiement Mobile Money -->
+          <section class="etape-parcours" data-etape="paiement" hidden aria-labelledby="titre-etape-paiement">
+            <h3 id="titre-etape-paiement">Paie ta participation</h3>
+            <details class="reglement" id="reglement-bloc" hidden>
+              <summary>Lire le règlement du jeu</summary>
+              <p id="reglement-texte"></p>
+            </details>
+            <p class="sr-only">Moyens de paiement acceptés :</p>
+            <ul class="operateurs">
+              <li class="operateur">MTN MoMo</li>
+              <li class="operateur">Moov Money</li>
+              <li class="operateur">Celtiis Cash</li>
+            </ul>
+            <div class="champ champ--case">
+              <input type="checkbox" id="accepte-reglement">
+              <label for="accepte-reglement">J'accepte le règlement et je comprends que la participation n'est pas remboursable.</label>
+            </div>
+            <button class="bouton bouton--rouge bouton--large" type="button" id="btn-payer">Payer</button>
+            <p class="champ__aide">Une fenêtre de paiement sécurisée s'ouvre : choisis ton opérateur et valide sur ton téléphone.</p>
+          </section>
+
+          <!-- Étape 3a : paiement confirmé, prêt à commencer -->
+          <section class="etape-parcours" data-etape="pret" hidden aria-labelledby="titre-etape-pret">
+            <h3 id="titre-etape-pret">Paiement confirmé ✔</h3>
+            <p>Tu as <strong id="pret-duree">–</strong> pour répondre à <strong id="pret-questions">–</strong>. Le chronomètre démarre dès que tu cliques sur « Commencer » et ne s'arrête pas si tu quittes la page.</p>
+            <ul class="liste-coches">
+              <li>Une seule réponse par question.</li>
+              <li>Tu peux changer d'avis jusqu'à l'envoi.</li>
+              <li>À la fin du temps, tes réponses sont envoyées automatiquement.</li>
+            </ul>
+            <button class="bouton bouton--rouge bouton--large" type="button" id="btn-commencer">Commencer le questionnaire</button>
+          </section>
+
+          <!-- Étape 3b : questionnaire -->
+          <section class="etape-parcours" data-etape="questionnaire" hidden aria-labelledby="titre-etape-questionnaire">
+            <div class="chrono" id="chrono">
+              <p class="chrono__temps"><span class="sr-only">Temps restant : </span><span id="chrono-temps">--:--</span></p>
+              <p class="chrono__progres"><span id="chrono-repondu">0</span> / <span id="chrono-total">0</span> réponses</p>
+              <div class="chrono__barre" aria-hidden="true"><span id="chrono-barre"></span></div>
+            </div>
+            <h3 id="titre-etape-questionnaire" class="sr-only">Questionnaire</h3>
+            <form id="formulaire-questionnaire" novalidate>
+              <ol class="questions" id="liste-questions"></ol>
+              <button class="bouton bouton--rouge bouton--large" type="submit" id="btn-envoyer">Envoyer mes réponses</button>
+            </form>
+            <template id="modele-question">
+              <li class="question">
+                <fieldset>
+                  <legend class="question__intitule"></legend>
+                  <div class="question__choix"></div>
+                </fieldset>
+              </li>
+            </template>
+          </section>
+
+          <!-- Étape 4 : terminé -->
+          <section class="etape-parcours" data-etape="termine" hidden aria-labelledby="titre-etape-termine">
+            <h3 id="titre-etape-termine">Merci pour ta participation !</h3>
+            <p id="termine-message">Tes réponses sont enregistrées. La date de la rencontre en présentiel sera publiée sur le site.</p>
+            <p>Résultat : <strong id="termine-resultat">En attente</strong></p>
+            <div class="rencontre" id="termine-rencontre" hidden>
+              <h4>Rencontre en présentiel</h4>
+              <p><time id="rencontre-date"></time> · <span id="rencontre-lieu"></span></p>
+              <p id="rencontre-infos"></p>
+            </div>
+            <p><a class="bouton bouton--contour" href="/dashboard">Voir mon espace</a></p>
+          </section>
+
+          <!-- Jeu non ouvert -->
+          <section class="etape-parcours" data-etape="ferme" hidden aria-labelledby="titre-etape-ferme">
+            <h3 id="titre-etape-ferme">Participations fermées</h3>
+            <p id="ferme-message">Ce questionnaire n'est pas ouvert.</p>
+            <p><a class="bouton bouton--contour" href="/jeux">Voir les autres jeux</a></p>
+          </section>
+        </article>
+      </div>
+    </section>
+
+    <!-- Paiement en mode test (PAIEMENT_MODE=simulation) : aucun argent réel -->
+    <dialog class="dialogue dialogue--petit" id="dialogue-simulation" aria-labelledby="titre-simulation">
+      <form method="dialog" id="formulaire-simulation">
+        <p class="badge badge--test">Mode test</p>
+        <h3 id="titre-simulation">Paiement simulé</h3>
+        <p>Aucun argent n'est débité. Ce mode sert à tester le site avant d'activer KKiaPay.</p>
+        <div class="champ">
+          <label for="simulation-operateur">Opérateur</label>
+          <select id="simulation-operateur">
+            <option>MTN MoMo</option>
+            <option>Moov Money</option>
+            <option>Celtiis Cash</option>
+          </select>
+        </div>
+        <div class="dialogue__actions">
+          <button class="bouton bouton--contour" type="submit" value="non">Annuler</button>
+          <button class="bouton bouton--rouge" type="submit" value="oui">Valider le paiement simulé</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Confirmation avant l'envoi s'il reste des questions sans réponse -->
+    <dialog class="dialogue dialogue--petit" id="dialogue-envoi" aria-labelledby="titre-envoi">
+      <form method="dialog">
+        <h3 id="titre-envoi">Envoyer tes réponses ?</h3>
+        <p id="texte-envoi"></p>
+        <div class="dialogue__actions">
+          <button class="bouton bouton--contour" type="submit" value="non">Continuer à répondre</button>
+          <button class="bouton bouton--rouge" type="submit" value="oui">Envoyer</button>
+        </div>
+      </form>
+    </dialog>
+
+  </main>
+
+  <!-- ================= PIED DE PAGE (identique sur toutes les pages) =================
+       Les éléments data-info sont remplis par site.js avec les informations saisies par le super-administrateur. -->
+  <footer class="pied">
+    <div class="pied__guirlande" aria-hidden="true"></div>
+    <div class="conteneur pied__grille">
+      <section class="pied__bloc pied__marque" aria-label="L'événement">
+        <img src="/images/logo-paranoel-blanc.svg" alt="Para'Noel" width="214" height="59" loading="lazy">
+        <p data-info="description_courte">Le rendez-vous de Noël : jeux, fête et partage.</p>
+      </section>
+
+      <nav class="pied__bloc" aria-label="Pages du site">
+        <h2 class="pied__titre">Le site</h2>
+        <ul>
+          <li><a href="/jeux">Jeux concours</a></li>
+          <li><a href="/participer">Participer</a></li>
+          <li><a href="/annonces">Annonces</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <nav class="pied__bloc" aria-label="Mon compte">
+        <h2 class="pied__titre">Mon compte</h2>
+        <ul>
+          <li><a href="/register">S'inscrire</a></li>
+          <li><a href="/login">Se connecter</a></li>
+          <li><a href="/dashboard">Mon espace</a></li>
+        </ul>
+        <p class="pied__paiement">Paiement sécurisé par Mobile Money&nbsp;: <strong>MTN&nbsp;MoMo</strong>, <strong>Moov&nbsp;Money</strong>, <strong>Celtiis&nbsp;Cash</strong></p>
+      </nav>
+
+      <section class="pied__bloc" aria-label="Coordonnées">
+        <h2 class="pied__titre">Contact</h2>
+        <address>
+          <p data-info="adresse"></p>
+          <p data-masquer-si-vide hidden><a data-info="telephone" data-lien="tel" href="/contact">Téléphone</a></p>
+          <p data-masquer-si-vide hidden><a data-info="email" data-lien="mailto" href="/contact">E-mail</a></p>
+          <p data-info="horaires" data-format="lignes"></p>
+        </address>
+      </section>
+    </div>
+
+    <div class="conteneur pied__bas">
+      <p>© <span id="annee">2026</span> <span data-info="nom">Para'Noel</span>. Tous droits réservés.</p>
+      <nav aria-label="Réseaux sociaux">
+        <ul class="pied__reseaux">
+          <li data-masquer-si-vide hidden><a data-info="facebook" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">Facebook</a></li>
+          <li data-masquer-si-vide hidden><a data-info="instagram" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">Instagram</a></li>
+          <li data-masquer-si-vide hidden><a data-info="tiktok" data-lien="url" data-garder-texte href="/contact" rel="noopener" target="_blank">TikTok</a></li>
+          <li data-masquer-si-vide hidden><a data-info="whatsapp" data-lien="whatsapp" data-garder-texte href="/contact" rel="noopener" target="_blank">WhatsApp</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Scripts dans des fichiers séparés (Helmet bloque le JavaScript écrit dans la page) -->
+  <script src="/js/menu.js" defer></script>
+  <script src="/js/site.js" defer></script>
+  <script src="/js/listes.js" defer></script>
+  <script src="/js/participer.js" defer></script>
+</body>
+</html>
