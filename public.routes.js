@@ -4,6 +4,8 @@ const express = require('express');
 const Evenement = require('../models/evenement.model');
 const Contenus = require('../models/contenus.model');
 const Jeux = require('../models/jeux.model');
+const Galerie = require('../models/galerie.model');
+const AccueilPhotos = require('../models/accueil-photos.model');
 const { pageAccueilSelonRole } = require('../utils/redirection');
 
 const router = express.Router();
@@ -60,6 +62,24 @@ router.get('/jeux/:id', async (req, res, next) => {
     const jeu = Number.isInteger(id) && id > 0 ? await Jeux.trouverPublic(id) : null;
     if (!jeu) return res.status(404).json({ error: 'Jeu introuvable' });
     res.json(jeu);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Photos de la section « Notre histoire » (diaporama de l'accueil et de À propos)
+router.get('/accueil-photos', async (req, res, next) => {
+  try {
+    res.json(await AccueilPhotos.lister());
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Photos des éditions passées, regroupées par édition
+router.get('/galerie', async (req, res, next) => {
+  try {
+    res.json(await Galerie.listerParEdition());
   } catch (err) {
     next(err);
   }

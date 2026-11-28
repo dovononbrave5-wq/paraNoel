@@ -6,6 +6,7 @@ const db = require('../config/db');
 const User = require('../models/user.model');
 const Evenement = require('../models/evenement.model');
 const Galerie = require('../models/galerie.model');
+const AccueilPhotos = require('../models/accueil-photos.model');
 const Jeux = require('../models/jeux.model');
 const Paiements = require('../models/paiements.model');
 const Contenus = require('../models/contenus.model');
@@ -192,6 +193,51 @@ router.patch('/utilisateurs/:id/statut', SUPER, async (req, res, next) => {
     // Un compte suspendu est déconnecté à sa prochaine requête (passport.deserializeUser)
     await journaliser(req, 'compte', statut === 'suspendu' ? `${cible.email} suspendu` : `${cible.email} réactivé`);
     res.json({ message: statut === 'suspendu' ? `Le compte ${cible.email} est suspendu.` : `Le compte ${cible.email} est réactivé.` });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/* =====================================================================
+   PHOTOS DE « NOTRE HISTOIRE » : accueil et À propos (super-administrateur)
+   Nombre de photos illimité (20 maximum par envoi), affichées en diaporama.
+   ===================================================================== */
+router.get('/accueil-photos', SUPER, async (req, res, next) => {
+  try {
+    res.json(await AccueilPhotos.lister());
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/accueil-photos', SUPER, upload.images('photos', 20), async (req, res, next) => {
+  const photos = req.images || [];
+  const annuler = () => photos.forEach(upload.supprimerImagePublique);
+  try {
+    const legende = String(req.body.legende || '').trim();
+    const erreurs = [];
+    if (legende.length > 150) erreurs.push({ champ: 'legende', message: 'Légende : 150 caractères maximum' });
+    if (!photos.length) erreurs.push({ champ: 'photos', message: 'Choisissez au moins une photo' });
+    if (erreurs.length) { annuler(); return res.status(400).json({ errors: erreurs }); }
+
+    await AccueilPhotos.ajouter(legende, photos);
+    await journaliser(req, 'contenu', `${photos.length} photo(s) ajoutée(s) à la section « Notre histoire »`);
+    res.status(201).json({ message: `${photos.length} photo${photos.length > 1 ? 's ajoutées' : ' ajoutée'} à l'accueil.` });
+  } catch (err) {
+    annuler();
+    next(err);
+  }
+});
+
+router.delete('/accueil-photos/:id', SUPER, async (req, res, next) => {
+  try {
+    const id = entierPositif(req.params.id);
+    const photo = id && await AccueilPhotos.trouver(id);
+    if (!photo) return introuvable(res, 'Photo');
+    await AccueilPhotos.supprimer(photo.id);
+    upload.supprimerImagePublique(photo.image);
+    await journaliser(req, 'contenu', 'Photo retirée de la section « Notre histoire »');
+    res.json({ message: 'Photo supprimée.' });
   } catch (err) {
     next(err);
   }

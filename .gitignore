@@ -3,3 +3,7 @@ node_modules/
 uploads/
 prive/
 _a_supprimer/
+_sauvegarde-avant-claude/
+ParaNoel/
+.env.*
+!.exemple.env

@@ -29,6 +29,7 @@ const Stockage = require('./services/stockage');
 const Inscription = require('./models/inscription.model');
 const Jeux = require('./models/jeux.model');
 const Galerie = require('./models/galerie.model');
+const AccueilPhotos = require('./models/accueil-photos.model');
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const page404 = (res) => res.status(404).sendFile(path.join(PUBLIC_DIR, '404.html'));
@@ -159,6 +160,7 @@ app.listen(PORT, () => {
   console.log(`Para'Noel lancé sur http://localhost:${PORT}`);
   db.verifierConnexion();
   Galerie.creerTable().catch((err) => console.error('Table de la galerie :', err.code || err.message));
+  AccueilPhotos.creerTable().catch((err) => console.error('Table des photos de l\'accueil :', err.code || err.message));
   Jeux.initialiser().catch((err) => console.error('Mise à jour des tables jeux et participations :', err.code || err.message));
   Inscription.creerTable().catch((err) => console.error('Table des inscriptions en attente :', err.code || err.message));
   kkiapay.verifierConfiguration();

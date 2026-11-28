@@ -1597,6 +1597,27 @@ tr.resultat-retenu td { background: #f3fbf6; }
 @keyframes neige { from { background-position: 0 0; } to { background-position: 40px 240px; } }
 @keyframes pulsation { 50% { box-shadow: 0 0 0 6px rgba(200, 16, 46, .25); } }
 
+/* ---------- Diaporama « Notre histoire » (diaporama.js) ---------- */
+.diaporama { position: relative; overflow: hidden; border-radius: var(--rayon); box-shadow: var(--ombre-forte); background: var(--creme); }
+.diaporama .image-arrondie { box-shadow: none; }
+.diaporama__piste { display: flex; transition: transform .5s ease; }
+.diaporama__image { flex: 0 0 100%; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+.diaporama__fleche {
+  position: absolute; top: 50%; transform: translateY(-50%); width: 2.6rem; height: 2.6rem;
+  border: 0; border-radius: 50%; background: rgba(8, 42, 32, .6); color: #fff;
+  font-size: 1.8rem; line-height: 1; cursor: pointer;
+}
+.diaporama__fleche:hover, .diaporama__fleche:focus-visible { background: var(--rouge); }
+.diaporama__fleche--precedent { left: .6rem; }
+.diaporama__fleche--suivant { right: .6rem; }
+.diaporama__legende {
+  position: absolute; left: 0; right: 0; bottom: 2.2rem; margin: 0; padding: .5rem 1rem;
+  background: linear-gradient(transparent, rgba(8, 42, 32, .75)); color: #fff; font-size: .9rem; text-align: center;
+}
+.diaporama__points { position: absolute; left: 0; right: 0; bottom: .6rem; display: flex; justify-content: center; flex-wrap: wrap; gap: .4rem; }
+.diaporama__point { width: .7rem; height: .7rem; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .6); cursor: pointer; }
+.diaporama__point[aria-current="true"] { background: var(--rouge); transform: scale(1.25); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;

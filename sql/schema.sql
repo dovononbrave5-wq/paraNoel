@@ -6,13 +6,10 @@
 
 -- Lit ce fichier en UTF-8 (sinon les accents sont abîmés)
 SET NAMES utf8mb4;
-
 CREATE DATABASE IF NOT EXISTS para_noel
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
-
 USE para_noel;
-
 -- ---------------------------------------------------------------------
 --  Comptes : membres (participants), administrateurs, super-administrateur
 -- ---------------------------------------------------------------------
